@@ -3,6 +3,7 @@ package com.diptika.weatherforecast.view.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -16,8 +17,12 @@ import com.diptika.weatherforecast.domain.WeatherContract;
 import com.diptika.weatherforecast.domain.WeatherForecastInteractor;
 import com.diptika.weatherforecast.domain.WeatherPresenter;
 import com.diptika.weatherforecast.model.response.CurrentWeatherResponse;
+import com.diptika.weatherforecast.model.response.Forecastday;
 import com.diptika.weatherforecast.model.response.WeatherForecastResponse;
 import com.diptika.weatherforecast.view.adapter.WeatherForecastAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Diptika on 07/09/19.
@@ -25,6 +30,7 @@ import com.diptika.weatherforecast.view.adapter.WeatherForecastAdapter;
 public class WeatherForecastActivity extends AppCompatActivity implements WeatherContract.View {
     public static final String TAG=WeatherForecastActivity.class.getName();
     public static final int DELAY=5000;
+    public static final int DAYS=4;
     public static final String CITY="Bangalore";
 
     private WeatherPresenter weatherPresenter;
@@ -34,6 +40,7 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
     private LinearLayout llWeatherInfo;
     private RecyclerView rvWeatherForecast;
     private WeatherForecastAdapter weatherForecastAdapter;
+    private List<Forecastday> weatherForecastResponseList=new ArrayList<>();
 
 
     @Override
@@ -57,6 +64,12 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
         rlLoading=findViewById(R.id.rl_loading);
         llWeatherInfo=findViewById(R.id.ll_weather_info);
         rvWeatherForecast=findViewById(R.id.rv_weather_forecast);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        rvWeatherForecast.setLayoutManager(linearLayoutManager);
+        weatherForecastResponseList = new ArrayList<>();
+        weatherForecastAdapter = new WeatherForecastAdapter(this,weatherForecastResponseList);
+        rvWeatherForecast.setAdapter(weatherForecastAdapter);
+
 
     }
 
@@ -76,10 +89,6 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
     }
 
 
-    @Override
-    public void notifyDataSetChanged() {
-
-    }
 
     @Override
     public void onError(String errMsg) {
@@ -105,12 +114,17 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
         }else {
            showErrorView();
         }
+        weatherPresenter.getWeatherForecastData(CITY,DAYS);
+
     }
 
 
     @Override
     public void showWeatherForecastData(WeatherForecastResponse weatherForecastResponse) {
-
+     if(weatherForecastResponse!=null && weatherForecastResponse.getForecast()!=null){
+         weatherForecastResponseList.addAll(weatherForecastResponse.getForecast().getForecastday());
+     }
+     weatherForecastAdapter.notifyDataSetChanged();
     }
 
     private void showErrorView(){

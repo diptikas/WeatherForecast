@@ -10,8 +10,6 @@ import com.diptika.weatherforecast.model.response.WeatherForecastResponse;
 public class WeatherContract {
 
     public interface View {
-        void notifyDataSetChanged();
-
         void onError(String errMsg);
 
         void showCurrentWeatherData(CurrentWeatherResponse currentWeatherResponse);
