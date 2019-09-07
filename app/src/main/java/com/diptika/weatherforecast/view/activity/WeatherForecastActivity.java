@@ -7,6 +7,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -67,6 +69,11 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         rvWeatherForecast.setLayoutManager(linearLayoutManager);
         weatherForecastResponseList = new ArrayList<>();
+        final LayoutAnimationController controller =
+                AnimationUtils.loadLayoutAnimation(this, R.anim.layout_animation);
+
+        rvWeatherForecast.setLayoutAnimation(controller);
+
         weatherForecastAdapter = new WeatherForecastAdapter(this,weatherForecastResponseList);
         rvWeatherForecast.setAdapter(weatherForecastAdapter);
 
@@ -125,6 +132,8 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
          weatherForecastResponseList.addAll(weatherForecastResponse.getForecast().getForecastday());
      }
      weatherForecastAdapter.notifyDataSetChanged();
+     rvWeatherForecast.scheduleLayoutAnimation();
+
     }
 
     private void showErrorView(){
