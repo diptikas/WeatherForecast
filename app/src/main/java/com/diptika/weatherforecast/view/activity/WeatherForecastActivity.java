@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,7 +30,7 @@ import java.util.List;
 /**
  * Created by Diptika on 07/09/19.
  */
-public class WeatherForecastActivity extends AppCompatActivity implements WeatherContract.View {
+public class WeatherForecastActivity extends AppCompatActivity implements WeatherContract.View, View.OnClickListener {
     public static final String TAG=WeatherForecastActivity.class.getName();
     public static final int DELAY=5000;
     public static final int DAYS=4;
@@ -41,6 +42,7 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
     private RelativeLayout rlError,rlLoading;
     private LinearLayout llWeatherInfo;
     private RecyclerView rvWeatherForecast;
+    private Button btnRetry;
     private WeatherForecastAdapter weatherForecastAdapter;
     private List<Forecastday> weatherForecastResponseList=new ArrayList<>();
 
@@ -66,24 +68,37 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
         rlLoading=findViewById(R.id.rl_loading);
         llWeatherInfo=findViewById(R.id.ll_weather_info);
         rvWeatherForecast=findViewById(R.id.rv_weather_forecast);
+        btnRetry=findViewById(R.id.btn_retry);
+        btnRetry.setOnClickListener(this);
+        setUpRecyclerView();
+
+
+    }
+
+    private void setUpRecyclerView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         rvWeatherForecast.setLayoutManager(linearLayoutManager);
         weatherForecastResponseList = new ArrayList<>();
         final LayoutAnimationController controller =
                 AnimationUtils.loadLayoutAnimation(this, R.anim.layout_animation);
-
         rvWeatherForecast.setLayoutAnimation(controller);
 
         weatherForecastAdapter = new WeatherForecastAdapter(this,weatherForecastResponseList);
         rvWeatherForecast.setAdapter(weatherForecastAdapter);
-
-
     }
 
     //initializing presenter
     private void initPresenter(){
         weatherPresenter = new WeatherPresenter(new CurrentWeatherInteractor(),new WeatherForecastInteractor());
         weatherPresenter.subscribeView(this);
+        getWeatherInfo();
+
+    }
+
+    /**
+     * Get Weather Info
+     */
+    private void getWeatherInfo() {
         //get current weather info
         showLoadingView();
         new Handler().postDelayed(new Runnable() {
@@ -92,9 +107,7 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
                 weatherPresenter.getCurrentWeatherData(CITY);
             }
         },DELAY); // wait for 5 seconds
-
     }
-
 
 
     @Override
@@ -125,7 +138,10 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
 
     }
 
-
+    /**
+     * Update weather forecast ui
+     * @param weatherForecastResponse
+     */
     @Override
     public void showWeatherForecastData(WeatherForecastResponse weatherForecastResponse) {
      if(weatherForecastResponse!=null && weatherForecastResponse.getForecast()!=null){
@@ -136,18 +152,27 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
 
     }
 
+    /**
+     * Show Error UI
+     */
     private void showErrorView(){
         llWeatherInfo.setVisibility(View.GONE);
         rlLoading.setVisibility(View.GONE);
         rlError.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Show Loading UI
+     */
     private void showLoadingView(){
         llWeatherInfo.setVisibility(View.GONE);
         rlLoading.setVisibility(View.VISIBLE);
         rlError.setVisibility(View.GONE);
     }
 
+    /**
+     * Show Weather Info UI
+     */
     private void showWeatherView(){
         llWeatherInfo.setVisibility(View.VISIBLE);
         rlLoading.setVisibility(View.GONE);
@@ -164,4 +189,19 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
     }
 
 
+    /**
+     * Called when a view has been clicked.
+     *
+     * @param v The view that was clicked.
+     */
+    @Override
+    public void onClick(View v) {
+     switch (v.getId()){
+         case R.id.btn_retry:
+             getWeatherInfo();
+             break;
+             default:
+                 break;
+     }
+    }
 }

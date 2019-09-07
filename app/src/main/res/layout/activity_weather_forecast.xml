@@ -78,7 +78,29 @@
         android:background="@color/bg_red"
         android:visibility="gone">
 
+      <TextView
+          android:id="@+id/tv_error"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textColor="@color/tc_white"
+          android:fontFamily="sans-serif-thin"
+          android:gravity="left"
+          android:textSize="54sp"
+          android:layout_marginLeft="25dp"
+          android:layout_marginRight="18dp"
+          android:layout_centerInParent="true"
+          android:text="@string/txt_err"/>
 
+        <Button
+            android:id="@+id/btn_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:text="@string/txt_retry"
+            android:background="@color/bg_dark_grey"
+            android:textColor="@color/tc_white"
+            android:layout_below="@+id/tv_error"/>
 
     </RelativeLayout>
 
