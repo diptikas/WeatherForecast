@@ -149,7 +149,6 @@ public class WeatherForecastActivity extends AppCompatActivity implements Weathe
      }
      weatherForecastAdapter.notifyDataSetChanged();
      rvWeatherForecast.scheduleLayoutAnimation();
-
     }
 
     /**
